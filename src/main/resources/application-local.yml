@@ -21,7 +21,7 @@ spring:
 
     batch:
         job:
-            name: {job.name:NONE}
+            name: ${job.name:NONE}
         jdbc:
             initialize-schema: never
             schema: classpath:org/springframework/batch/core/schema-mysql.sql

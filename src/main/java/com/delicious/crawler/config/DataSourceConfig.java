@@ -1,4 +1,4 @@
-package com.delicious.crawler.job;
+package com.delicious.crawler.config;
 
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Qualifier;

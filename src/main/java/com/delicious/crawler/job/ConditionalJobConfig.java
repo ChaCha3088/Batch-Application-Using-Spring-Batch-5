@@ -23,27 +23,26 @@ public class ConditionalJobConfig {
     public Job conditionalJob1() {
         return new JobBuilder("conditionalJob1", jobRepository)
             .start(conditionalJob1Step1())
-            .on("FAILED") // FAILED 일 경우
-            .to(conditionalJob1Step3()) // step3으로 이동한다.
-            .on("*") // step3의 결과 관계 없이
-            .end() // step3으로 이동하면 Flow가 종료한다.
+                .on("FAILED") // FAILED 일 경우
+                .to(conditionalJob1Step3()) // step3으로 이동한다.
+                .on("*") // step3의 결과 관계 없이
+                .end() // step3으로 이동하면 Flow가 종료한다.
 
             .from(conditionalJob1Step1()) // step1로부터
-            .on("*") // FAILED 외에 모든 경우
-            .to(conditionalJob1Step2()) // step2로 이동한다.
-            .next(conditionalJob1Step3()) // step2가 정상 종료되면 step3으로 이동한다.
-            .on("*") // step3의 결과 관계 없이
-            .end() // step3으로 이동하면 Flow가 종료한다.
-
+                .on("*") // FAILED 외에 모든 경우
+                .to(conditionalJob1Step2()) // step2로 이동한다.
+                .next(conditionalJob1Step3()) // step2가 정상 종료되면 step3으로 이동한다.
+                .on("*") // step3의 결과 관계 없이
+                .end() // step3으로 이동하면 Flow가 종료한다.
             .end() // Job 종료
             .build();
     }
 
     @Bean
     public Step conditionalJob1Step1() {
-        return new StepBuilder("conditionalJob1Step1")
+        return new StepBuilder("conditionalJob1Step1", jobRepository)
             .tasklet((contribution, chunkContext) -> {
-                log.info(">>>>> This is stepNextConditionalJob Step1");
+                log.info(">>>>> This is conditionalJob1Step1");
 
                 /**
                  ExitStatus를 FAILED로 지정한다.
@@ -52,28 +51,29 @@ public class ConditionalJobConfig {
                 contribution.setExitStatus(ExitStatus.FAILED);
 
                 return RepeatStatus.FINISHED;
-            })
+            }, transactionManager)
             .build();
     }
 
     @Bean
     public Step conditionalJob1Step2() {
-        return stepBuilderFactory.get("conditionalJobStep2")
+        return new StepBuilder("conditionalJobStep2", jobRepository)
             .tasklet((contribution, chunkContext) -> {
-                log.info(">>>>> This is stepNextConditionalJob Step2");
+                log.info(">>>>> This is conditionalJob1Step2");
+
                 return RepeatStatus.FINISHED;
-            })
+            }, transactionManager)
             .build();
     }
 
     @Bean
     public Step conditionalJob1Step3() {
-        return stepBuilderFactory.get("conditionalJobStep3")
+        return new StepBuilder("conditionalJob1Step3", jobRepository)
             .tasklet((contribution, chunkContext) -> {
-                log.info(">>>>> This is stepNextConditionalJob Step3");
+                log.info(">>>>> This is conditionalJob1Step3");
+
                 return RepeatStatus.FINISHED;
-            })
+            }, transactionManager)
             .build();
     }
-
 }

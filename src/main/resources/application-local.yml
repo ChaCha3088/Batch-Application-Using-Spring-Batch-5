@@ -15,6 +15,10 @@ spring:
                 level:
                     org:
                         hibernate.SQL: debug
+        properties:
+            hibernate:
+                dialect: org.hibernate.dialect.MySQLDialect
+
     batch:
         job:
             name: {job.name:NONE}

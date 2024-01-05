@@ -1,0 +1,16 @@
+spring:
+    jpa:
+        hibernate:
+            dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+
+        properties:
+            hibernate:
+                default_batch_fetch_size: 100
+
+# aws parameter store
+aws:
+    paramstore:
+        enabled: true
+        prefix: /Delicious
+        name: BATCH
+        profileSeparator: _

@@ -18,11 +18,11 @@ import org.springframework.transaction.PlatformTransactionManager;
 @Configuration
 @Slf4j
 public class BatchConfig {
-
     @Bean
-    public Job job(JobRepository jobRepository, Step step) {
+    public Job job(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
         return new JobBuilder("job", jobRepository)
-            .start(step)
+            .start(step1(null, jobRepository, transactionManager))
+            .next(step2(null, jobRepository, transactionManager))
             .build();
     }
 
@@ -30,8 +30,18 @@ public class BatchConfig {
     @JobScope
     public Step step1(@Value("#{jobParameters[requestDate]}") String requestDate, JobRepository jobRepository, PlatformTransactionManager transactionManager) {
         return new StepBuilder("step", jobRepository)
+                .tasklet((StepContribution contribution, ChunkContext chunkContext) -> {
+                    throw new IllegalArgumentException("step1에서 실패!");
+                }, transactionManager)
+                .build();
+    }
+
+    @Bean
+    @JobScope
+    public Step step2(@Value("#{jobParameters[requestDate]}") String requestDate, JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        return new StepBuilder("step", jobRepository)
             .tasklet((StepContribution contribution, ChunkContext chunkContext) -> {
-                log.info(">>>>> This is Step1");
+                log.info(">>>>> This is Step2");
                 log.info(">>>>> requestDate: {}", requestDate);
 
                 return RepeatStatus.FINISHED;

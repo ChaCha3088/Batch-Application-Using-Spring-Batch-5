@@ -1,10 +1,10 @@
-package com.delicious.crawler;
+package com.delicious.batch;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class CrawlerApplicationTests {
+class BatchApplicationTests {
 
 	@Test
 	void contextLoads() {

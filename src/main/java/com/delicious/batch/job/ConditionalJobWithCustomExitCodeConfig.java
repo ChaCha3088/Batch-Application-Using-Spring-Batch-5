@@ -1,6 +1,6 @@
-package com.delicious.crawler.job;
+package com.delicious.batch.job;
 
-import com.delicious.crawler.listener.SkipCheckingListener;
+import com.delicious.batch.listener.SkipCheckingListener;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.ExitStatus;

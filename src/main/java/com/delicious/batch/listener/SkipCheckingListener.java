@@ -1,4 +1,4 @@
-package com.delicious.crawler.listener;
+package com.delicious.batch.listener;
 
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepExecution;

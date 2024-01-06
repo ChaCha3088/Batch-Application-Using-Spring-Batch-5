@@ -1,13 +1,13 @@
-package com.delicious.crawler;
+package com.delicious.batch;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class CrawlerApplication {
+public class BatchApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(CrawlerApplication.class, args);
+		SpringApplication.run(BatchApplication.class, args);
 	}
 
 }

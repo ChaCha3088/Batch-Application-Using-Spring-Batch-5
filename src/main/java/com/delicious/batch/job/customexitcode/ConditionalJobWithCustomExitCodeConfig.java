@@ -1,6 +1,8 @@
-package com.delicious.batch.job;
+package com.delicious.batch.job.customexitcode;
 
-import com.delicious.batch.listener.SkipCheckingListener;
+import static org.springframework.batch.core.BatchStatus.FAILED;
+
+import com.delicious.batch.listener.SkipListener;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.ExitStatus;
@@ -14,8 +16,6 @@ import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
-
-import static org.springframework.batch.core.BatchStatus.FAILED;
 
 @Slf4j
 @Configuration
@@ -31,14 +31,23 @@ public class ConditionalJobWithCustomExitCodeConfig {
                 .on(FAILED.toString()) // FAILED 일 경우
                     .to(errorPrint1()) // errorPrint1로 이동한다.
                         .on("*") // errorPrint1의 결과 관계 없이
-                        .end() // errorPrint1으로 이동하면 Flow가 종료된다.
-                .on(SkipCheckingListener.skipCheck) // step1이 SKIP WHEN SUCCESS이면
-                .to(conditionalJobWithCustomExitCode1Step3()) // step3로 이동한다.
+                            .end() // errorPrint1으로 이동하면 Flow가 종료된다.
 
-            .from(conditionalJobWithCustomExitCode1Step1()) // step1로부터
-                .on()
-                .listener(new SkipCheckingListener()) // Step1에 SkipCheckingListener를 등록한다.
+            .from(conditionalJobWithCustomExitCode1Step1()) // conditionalJobWithCustomExitCode1Step1로부터
+                .on(SkipListener.skip) // skip 일 경우
+                .to(conditionalJobWithCustomExitCode1Step3()) // conditionalJobWithCustomExitCode1Step3로 이동한다.
+                .on("*") // conditionalJobWithCustomExitCode1Step3의 결과 관계 없이
+                .end() // Flow가 종료된다.
 
+            .from(conditionalJobWithCustomExitCode1Step1()) // conditionalJobWithCustomExitCode1Step1로부터
+                .on("*") // 모든 경우에
+                    .to(conditionalJobWithCustomExitCode1Step2()) // conditionalJobWithCustomExitCode1Step2로 이동한다.
+
+            .next(conditionalJobWithCustomExitCode1Step3()) // 다음으로 conditionalJobWithCustomExitCode1Step3로 이동한다.
+                .on("*") // conditionalJobWithCustomExitCode1Step3의 결과 관계 없이
+                    .end() // Flow가 종료된다.
+
+            .end() // Job 종료
 
             .build();
     }
@@ -50,7 +59,8 @@ public class ConditionalJobWithCustomExitCodeConfig {
             .tasklet((contribution, chunkContext) -> {
                 log.info(">>>>> This is conditionalJobWithCustomExitCode1Step1");
 
-                contribution.setExitStatus(new ExitStatus(SkipCheckingListener.skipCheck));
+                contribution.setExitStatus(new ExitStatus(SkipListener.skip));
+//                contribution.setExitStatus(ExitStatus.FAILED);
 
                 return RepeatStatus.FINISHED;
             }, transactionManager)

@@ -1,4 +1,4 @@
-package com.delicious.batch.job;
+package com.delicious.batch.job.conditional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

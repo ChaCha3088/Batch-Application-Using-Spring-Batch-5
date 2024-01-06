@@ -6,15 +6,16 @@ import org.springframework.batch.core.StepExecutionListener;
 
 import static org.springframework.batch.core.ExitStatus.FAILED;
 
-public class SkipCheckingListener implements StepExecutionListener {
-    public static final String skipCheck = "SKIP WHEN SUCCESS";
+public class SkipListener implements StepExecutionListener {
+    public static final String skip = "SKIP";
 
     @Override
     public ExitStatus afterStep(StepExecution stepExecution) {
         String exitCode = stepExecution.getExitStatus().getExitCode();
 
-        if (!exitCode.equals(FAILED.getExitCode()) && stepExecution.getSkipCount() > 0) {
-            return new ExitStatus("SKIP WHEN SUCCESS");
+        // 실패한게 아니라면
+        if (!exitCode.equals(FAILED.getExitCode())) {
+            return new ExitStatus(skip);
         }
         else {
             return null;
